@@ -4,7 +4,7 @@ import org.apache.spark.sql.types._
 import ai.catboost.spark._
 import ru.yandex.catboost.spark.catboost4j_spark.core.src.native_impl.EModelType
 
-object run extends App {
+object Run extends App {
   println("Start")
   val spark = SparkSession.builder()
     .master("local[*]")
@@ -78,12 +78,14 @@ object run extends App {
 
   // load the model as a local file in CatBoost native format
 
-  val loadedNativeModel = CatBoostClassificationModel.loadNativeModel(savedNativeModelPath)
+  val loadedNativeModel = CatBoostClassificationModel.loadNativeModel(savedNativeModelPath, format=EModelType.Json)
 
   val predictionsFromLoadedNativeModel = loadedNativeModel.transform(evalPool.data)
   println("predictionsFromLoadedNativeModel")
   predictionsFromLoadedNativeModel.show()
 
+  spark.stop()
+  System.exit(0)
 }
 
 
