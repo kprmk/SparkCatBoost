@@ -1,8 +1,8 @@
-import org.apache.spark.sql.{Row,SparkSession}
+import org.apache.spark.sql.{Row, SparkSession}
 import org.apache.spark.ml.linalg._
 import org.apache.spark.sql.types._
-
 import ai.catboost.spark._
+import ru.yandex.catboost.spark.catboost4j_spark.core.src.native_impl.EModelType
 
 object run extends App {
   println("Start")
@@ -61,10 +61,12 @@ object run extends App {
   model.write.overwrite().save(savedModelPath)
 
   // save the model as a local file in CatBoost native format
-  val savedNativeModelPath = s"$HOME_DIR/binclass_model.cbm"
+  val savedNativeModelPath = s"$HOME_DIR/binclass_model.json"
   println(savedNativeModelPath)
-  model.saveNativeModel(savedNativeModelPath)
-
+  model.saveNativeModel(
+    savedNativeModelPath,
+    format=EModelType.Json
+  )
 
   // load the model (can be used in a different Spark session)
   val loadedModel = CatBoostClassificationModel.load(savedModelPath)
